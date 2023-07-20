@@ -7,7 +7,9 @@ const User = require('../models/userModel')
 //route  GET/api/goals
 //access private
 const getGoals = asyncHandler(async(req,res)=>{
+  
     const goals= await Goal.find({user:req.user.id})
+    // const goals= await Goal.find({checked:true})
     res.status(200).json(goals)
 })
 
@@ -22,6 +24,7 @@ const setGoal = asyncHandler(async(req,res)=>{
     }
     const goal = await Goal.create({
         text:req.body.text,
+        checked:reqbody.checked,
         user:req.user.id
     })
     res.status(200).json(goal)

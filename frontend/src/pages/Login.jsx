@@ -1,6 +1,11 @@
 import React from 'react'
 import { useState,useEffect } from 'react'
 import { FaSignInAlt } from 'react-icons/fa'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { login, reset } from '../features/auth/authSlice'
+import Spinner from '../components/Spinner'
 
 function Login() {
     const  [formData, setFormData]=useState({   //an object and that object have several attributes name, email, pw, pw2
@@ -13,6 +18,29 @@ function Login() {
                                                             //The line const {name, email, password, password2} = formData; is like taking values from a box and giving them individual names.
                                                             //Imagine formData is a box, and inside that box, we have four smaller boxes named name, email, password, and password2. Each of these smaller boxes contains some information (initially empty strings).
                                                             //With the line const {name, email, password, password2} = formData;, we open the big box (formData) and take out the contents from the four smaller boxes and assign them to four new variables, which are simply named name, email, password, and password2. Now you can use these new variables directly to access the values inside them, like name, email, etc., instead of writing formData.name, formData.email, etc. It's a more convenient way to work with the data inside the formData object.
+     
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+                                                            
+    const {user, isLoading, isError, isSuccess, message}= useSelector(
+        (state)=> state.auth         
+      ) 
+     
+
+      useEffect(()=>{
+        if(isError){
+            toast.error(message)
+        }
+
+        if(isSuccess || user){
+            navigate('/')
+        }
+
+        dispatch(reset())
+    }, [user, isError, isSuccess, message,navigate,dispatch])
+    
+    
+     
      const onChange = (e) =>{
         setFormData((prevState)=>({
             ...prevState,
@@ -22,6 +50,18 @@ function Login() {
 
      const onSubmit = (e) =>{
         e.preventDefault()
+
+        const userData ={
+            email,
+            password
+        }
+
+        dispatch(login(userData))
+     }
+
+
+     if(isLoading){
+        return <Spinner/>
      }
     
      return (
